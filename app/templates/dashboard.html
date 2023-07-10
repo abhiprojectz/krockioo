@@ -1,0 +1,1064 @@
+{% extends "./base.html" %} {% load static %} {% block navbar %}
+<!-- Modal for image generation -->
+<div class="modal" id="imageModal" tabindex="-1">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">StoryBoard AI</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body" id="img_ai_block">
+        <div class="mb-3">
+          <label class="form-label">Pick the style:</label>
+        </div>
+
+        <div class="container_modall">
+          <div class="leftit">
+            <div class="_ab">
+              <div class="btn btn-primary ms-auto">Pencil</div>
+              <div class="btn btn-primary ms-auto">Anime</div>
+              <div class="btn btn-primary ms-auto">Watercolor</div>
+              <div class="btn btn-primary ms-auto">3D render</div>
+              <div class="btn btn-primary ms-auto">Photo realistic</div>
+              <div class="btn btn-primary ms-auto">Blackish</div>
+              <div class="btn btn-primary ms-auto">Vector Art</div>
+              <div class="btn btn-primary ms-auto">Crayons Drawing</div>
+            </div>
+            <input type="hidden" value="" id="image_style" />
+          </div>
+          <div class="rightit">
+            <div class="text_m">Your design</div>
+            <img
+              src="https://d257k7uhfmf51y.cloudfront.net/static/app/interface/style-detalisation-ai-board/1.png"
+              alt=""
+            />
+            <div class="container_m">
+              <div class="left"></div>
+              <div class="right"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Usage</label>
+          <div class="container_m">
+            <div class="left">
+              <div>Your balance:</div>
+              <div><b>{{ user_balance }}</b></div>
+            </div>
+            <div class="right">
+              <div>Required Tokens:</div>
+              <div>60</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-body" id="loaderx" style="display: none">
+        <div class="centrex">
+          <div class="loader"></div>
+          <div class="pref_text">AI is running...</div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
+          Cancel
+        </a>
+        <a
+          href="#"
+          class="btn btn-primary ms-auto"
+          id="regenerate"
+          onclick="generate_images(this)"
+        >
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sparkles" width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#fff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+          <path d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm0 -12a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm-7 12a6 6 0 0 1 6 -6a6 6 0 0 1 -6 -6a6 6 0 0 1 -6 6a6 6 0 0 1 6 6z" />
+        </svg>
+          Generate Image
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Modal for suggestion generation -->
+<div class="modal" id="suggestModal" tabindex="-1">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Suggest AI</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body" id="img_ai_block_1x">
+        <div class="mb-3" style="margin-top: 45px">
+          <label class="form-label"
+            >Here is the suggestion script by AI:</label
+          >
+          <textarea
+            class="form-control"
+            id="suggest_content"
+            name="example-textarea-input"
+            rows="6"
+            placeholder="Script goes here...."
+          ></textarea
+          >
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Usage</label>
+          <div class="container_m">
+            <div class="left">
+              <div>Your balance:</div>
+              <div>60</div>
+            </div>
+            <div class="right">
+              <div>Required Tokens:</div>
+              <div><b>{{ user_balance }}</b></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label"
+          >Now continue to Script AI for generation.</label
+        >
+        </div>
+      </div>
+
+      <div class="modal-body" id="loaderz" style="display: none">
+        <div class="centrex">
+          <div class="loader"></div>
+          <div class="pref_text">AI is running...</div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="suggestModal">
+          Cancel
+        </a>
+        <a href="#" class="btn btn-primary ms-auto"          class="btn-close"
+        data-bs-dismiss="modal">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sparkles" width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#fff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+            <path d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm0 -12a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm-7 12a6 6 0 0 1 6 -6a6 6 0 0 1 -6 -6a6 6 0 0 1 -6 6a6 6 0 0 1 6 6z" />
+          </svg>
+          Continue to Script AI
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for script generation -->
+<div class="modal" id="scriptModal" tabindex="-1">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Script AI</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body" id="img_ai_block_1">
+        <div class="mb-3">
+          <div class="container_m">
+            <div class="left">
+              <label class="form-label">Language</label>
+              <select class="form-select cz_select" id="language">
+                <option value="english">English</option>
+                <option value="hindi">Hindi</option>
+                <option value="japanese">Japanese</option>
+              </select>
+            </div>
+            <div class="right">
+              <label class="form-label">Count frames</label>
+              <select class="form-select cz_select" id="count_frames">
+                <option value="3-5">3-5</option>
+                <option value="5-8">5-8</option>
+                <option value="8-12">8-12</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3" style="margin-top: 45px">
+          <label class="form-label"
+            >Write 1-2 sentences about the topic of your Script</label
+          >
+          <textarea
+            class="form-control"
+            id="text_content"
+            name="example-textarea-input"
+            rows="6"
+            placeholder="Script goes here...."
+          ></textarea
+          >
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Usage</label>
+          <div class="container_m">
+            <div class="left">
+              <div>Your balance:</div>
+              <div>60</div>
+            </div>
+            <div class="right">
+              <div>Required Tokens:</div>
+              <div><b>{{ user_balance }}</b></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-body" id="loadery" style="display: none">
+        <div class="centrex">
+          <div class="loader"></div>
+          <div class="pref_text">AI is running...</div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
+          Cancel
+        </a>
+        <a href="#" class="btn btn-primary ms-auto" onclick="generate_script()">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sparkles" width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#fff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+            <path d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm0 -12a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm-7 12a6 6 0 0 1 6 -6a6 6 0 0 1 -6 -6a6 6 0 0 1 -6 6a6 6 0 0 1 6 6z" />
+          </svg>
+          Generate Script
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock navbar %} {% block content %}
+<div class="page">
+  <!-- Navbar header -->
+  <div class="container-xl header_ev">
+    <div class="slab">
+      <div class="lsab">
+        <div class="py-3">
+          <a href="{% url 'app:app_panel' %}" class="btn btn_zap w-100">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="icon icon-tabler icon-tabler-arrow-left"
+              width="44"
+              height="44"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="#6A27FF"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M5 12l14 0" />
+              <path d="M5 12l6 6" />
+              <path d="M5 12l6 -6" />
+            </svg>
+            Back to home
+          </a>
+        </div>
+
+        <div class="py-3">
+          <a href="#" class="btn btn_zap w-100">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="icon icon-tabler icon-tabler-3d-cube-sphere"
+              width="44"
+              height="44"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="#6A27FF"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M6 17.6l-2 -1.1v-2.5" />
+              <path d="M4 10v-2.5l2 -1.1" />
+              <path d="M10 4.1l2 -1.1l2 1.1" />
+              <path d="M18 6.4l2 1.1v2.5" />
+              <path d="M20 14v2.5l-2 1.12" />
+              <path d="M14 19.9l-2 1.1l-2 -1.1" />
+              <path d="M12 12l2 -1.1" />
+              <path d="M18 8.6l2 -1.1" />
+              <path d="M12 12l0 2.5" />
+              <path d="M12 18.5l0 2.5" />
+              <path d="M12 12l-2 -1.12" />
+              <path d="M6 8.6l-2 -1.1" />
+            </svg>
+            {{ board_name|capfirst }}
+          </a>
+        </div>
+
+        <div class="py-3">
+          <a href="#" class="btn btn_zap w-100" id="current_date"></a>
+        </div>
+      </div>
+
+      <div class="rsab">
+        <div class="navbar-nav flex-row order-md-last">
+          <div class="nav-item d-none d-md-flex me-3">
+            <div class="btn-list">
+              <!-- add project -->
+              <div class="py-3">
+                <a
+                  href="{% url 'app:app_panel' %}"
+                  class="btn btn_zap btn-icon w-100"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="icon icon-tabler icon-tabler-circle-plus"
+                    width="44"
+                    height="44"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="#6A27FF"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                    <path d="M9 12l6 0" />
+                    <path d="M12 9l0 6" />
+                  </svg>
+                </a>
+              </div>
+
+              <div class="nav-item dropdown d-none d-md-flex me-3">
+                <a
+                  href="#"
+                  class="nav-link px-0 btn btn_zap btn-icon w-100"
+                  data-bs-toggle="dropdown"
+                  tabindex="-1"
+                  aria-label="Show notifications"
+                  aria-expanded="false"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="icon icon-tabler icon-tabler-bell"
+                    width="44"
+                    height="44"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="#6A27FF"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path
+                      d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6"
+                    />
+                    <path d="M9 17v1a3 3 0 0 0 6 0v-1" />
+                  </svg>
+                </a>
+                <div
+                  class="dropdown-menu dropdown-menu-arrow dropdown-menu-end dropdown-menu-card"
+                >
+                  <div class="card">
+                    <div class="card-header">
+                      <h3 class="card-title">Last updates</h3>
+                    </div>
+                    <div
+                      class="list-group list-group-flush list-group-hoverable"
+                    >
+                      <div class="list-group-item">
+                        <div class="row align-items-center">
+                          <div class="col-auto">
+                            <span
+                              class="status-dot status-dot-animated bg-red d-block"
+                            ></span>
+                          </div>
+                          <div class="col text-truncate">
+                            <a href="#" class="text-body d-block"
+                              >No notifications!</a
+                            >
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="nav-item dropdown">
+            <a
+              href="#"
+              class="nav-link d-flex lh-1 text-reset p-0"
+              data-bs-toggle="dropdown"
+              aria-label="Open user menu"
+            >
+              <span
+                class="avatar avatar-sm"
+                style="
+                  background-image: url(https://ui-avatars.com/api/?name={{ user_name }}?format=png);
+                "
+              ></span>
+              <div class="d-none d-xl-block ps-2">
+                <div>{{ user_name|capfirst }}</div>
+              </div>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+              <a href="{% url 'users:home' %}" class="dropdown-item">Home</a>
+              <a href="{% url 'users:logout' %}" class="dropdown-item"
+                >Logout</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#imageModal">
+      Launch modal with form
+    </button> -->
+
+  <div class="main_cont">
+    <!-- Left panel  -->
+    <div class="page-body" style="width: 75%; border-top: 1px solid #e3e8ee">
+      <div class="container-xl">
+        <!-- header navigation Left section-->
+        <div class="container-xl">
+          <div class="slab">
+            <div class="lsab">
+              <div class="py-3">
+                <div class="nav-item dropdown d-none d-md-flex me-3">
+                  <a
+                    href="#"
+                    class="nav-link px-0 btn btn_zap btn-icon w-100"
+                    data-bs-toggle="dropdown"
+                    tabindex="-1"
+                    aria-label="Show notifications"
+                    aria-expanded="false"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="icon icon-tabler icon-tabler-layout-bottombar-collapse"
+                      width="44"
+                      height="44"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="#6A27FF"
+                      fill="none"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path
+                        d="M20 6v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2z"
+                      />
+                      <path d="M20 15h-16" />
+                      <path d="M14 8l-2 2l-2 -2" />
+                    </svg>
+                  </a>
+                  <div
+                    class="dropdown-menu dropdown-menu-end dropdown-menu-card"
+                  >
+                    <div class="card">
+                      <div class="card-header">
+                        <h3 class="card-title">Details!</h3>
+                      </div>
+                      <div
+                        class="list-group list-group-flush list-group-hoverable"
+                      >
+                        <div class="list-group-item">
+                          <div class="row align-items-center">
+                            <div class="col-auto">
+                              <span
+                                class="status-dot status-dot-animated bg-red d-block"
+                              ></span>
+                            </div>
+                            <div class="col text-truncate">
+                              <span class="text-body d-block"
+                                >Board id is: {{ board_id }}.</span
+                              >
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- icon zoom in  -->
+              <div class="py-3">
+                <div
+                  class="btn btn_zap btn-icon w-100"
+                  onclick="increaseWidth()"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="icon icon-tabler icon-tabler-zoom-in"
+                    width="44"
+                    height="44"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="#6A27FF"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                    <path d="M7 10l6 0" />
+                    <path d="M10 7l0 6" />
+                    <path d="M21 21l-6 -6" />
+                  </svg>
+                </div>
+              </div>
+
+              <!-- icon zoom out -->
+              <div class="py-3">
+                <div
+                  class="btn btn_zap btn-icon w-100"
+                  onclick="decreaseWidth()"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="icon icon-tabler icon-tabler-zoom-out"
+                    width="44"
+                    height="44"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="#6A27FF"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                    <path d="M7 10l6 0" />
+                    <path d="M21 21l-6 -6" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div class="rsab">
+              <div class="py-3">
+                <a
+                  href="#"
+                  class="btn btn_zap w-100"
+                  data-bs-toggle="modal"
+                  data-bs-target="#suggestModal"
+                  onclick="suggestai()"
+                >
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-north-star" width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#6A27FF" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <path d="M3 12h18" />
+                  <path d="M12 21v-18" />
+                  <path d="M7.5 7.5l9 9" />
+                  <path d="M7.5 16.5l9 -9" />
+                </svg>
+                    <path d="M4 20l1.768 -1.768" />
+                  </svg>
+                  Suggest AI
+                </a>
+              </div>
+
+              <div class="py-3">
+                <a
+                  href="#"
+                  class="btn btn_zap w-100"
+                  data-bs-toggle="modal"
+                  data-bs-target="#scriptModal"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="icon icon-tabler icon-tabler-ballpen"
+                    width="44"
+                    height="44"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="#6A27FF"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M14 6l7 7l-4 4" />
+                    <path
+                      d="M5.828 18.172a2.828 2.828 0 0 0 4 0l10.586 -10.586a2 2 0 0 0 0 -2.829l-1.171 -1.171a2 2 0 0 0 -2.829 0l-10.586 10.586a2.828 2.828 0 0 0 0 4z"
+                    />
+                    <path d="M4 20l1.768 -1.768" />
+                  </svg>
+                  Script AI
+                </a>
+              </div>
+
+              <div class="py-3">
+                <a
+                  href="#"
+                  class="btn btn_zap w-100"
+                  data-bs-toggle="modal"
+                  data-bs-target="#imageModal"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="icon icon-tabler icon-tabler-wand"
+                    width="44"
+                    height="44"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="#6A27FF"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M6 21l15 -15l-3 -3l-15 15l3 3" />
+                    <path d="M15 6l3 3" />
+                    <path
+                      d="M9 3a2 2 0 0 0 2 2a2 2 0 0 0 -2 2a2 2 0 0 0 -2 -2a2 2 0 0 0 2 -2"
+                    />
+                    <path
+                      d="M19 13a2 2 0 0 0 2 2a2 2 0 0 0 -2 2a2 2 0 0 0 -2 -2a2 2 0 0 0 2 -2"
+                    />
+                  </svg>
+                  StoryBoard AI
+                </a>
+              </div>
+
+              <div class="py-3">
+                <div
+                  href="#"
+                  class="btn btn_zap w-100"
+                  onclick="delete_all_slides()"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="icon icon-tabler icon-tabler-trash-x"
+                    width="44"
+                    height="44"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="#6A27FF"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M4 7h16" />
+                    <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+                    <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+                    <path d="M10 12l4 4m0 -4l-4 4" />
+                  </svg>
+                  Delete All
+                </div>
+              </div>
+
+              <!-- Full view -->
+              <div class="py-3">
+                <div
+                  class="btn btn_zap btn-icon w-100"
+                  onclick="switch_fullscreen();"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="icon icon-tabler icon-tabler-maximize"
+                    width="44"
+                    height="44"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="#6A27FF"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M4 8v-2a2 2 0 0 1 2 -2h2" />
+                    <path d="M4 16v2a2 2 0 0 0 2 2h2" />
+                    <path d="M16 4h2a2 2 0 0 1 2 2v2" />
+                    <path d="M16 20h2a2 2 0 0 0 2 -2v-2" />
+                  </svg>
+                </div>
+              </div>
+              <!-- Download -->
+
+              <div class="nav-item dropdown d-none d-md-flex py-3">
+                <div
+                  class="nav-link px-0 btn btn_zap btn-icon w-100"
+                  data-bs-toggle="dropdown"
+                  tabindex="-1"
+                  aria-label="Show notifications"
+                  aria-expanded="false"
+                >
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-download" width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#6A27FF" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" />
+                  <path d="M7 11l5 5l5 -5" />
+                  <path d="M12 4l0 12" />
+                </svg>
+                </div>
+                <div
+                  class="dropdown-menu dropdown-menu-arrow dropdown-menu-end dropdown-menu-card"
+                >
+                  <div class="card">
+                    <div class="card-header">
+                      <h3
+                        onclick="download_pdf()"
+                        class="card-title"
+                        style="cursor: pointer"
+                      >
+                        Download PDF
+                      </h3>
+                    </div>
+                    <div
+                      class="list-group list-group-flush list-group-hoverable"
+                    >
+                      <div class="list-group-item" id="pdf_status">
+                        <div class="row align-items-center">
+                          <div class="col text-truncate">
+                            <div>
+                              <div class="centrex">
+                                <div class="loader"></div>
+                                <div class="pref_text">Downloading...</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <style>
+          .card_slides_item:hover {
+            border: 2px solid #00abff;
+            border-radius: 8px;
+          }
+        </style>
+        <div
+          class="row row-cards"
+          id="slides_container"
+          style="align-items: stretch; justify-content: center"
+        >
+          {% for board in boards %}
+          <div class="col-md-6 col-lg-3">
+            <div class="card_slides_item">
+              <div class="card-body" style="padding: 0; flex: 0">
+                <span
+                  onclick="image_change({{ board.slide_id }})"
+                  class="avatar bg_m mb-3 rounded"
+                  id="slide_image"
+                  style="background-image: url({{ board.slide_image }})"
+                ></span>
+
+                <div class="card_lane_items p-2">
+                  <span class="badge bg-purple-lt" id="slide_count"
+                    >{{ forloop.counter }}</span
+                  >
+                </div>
+              </div>
+
+              <div class="d-flex p-2">
+                <div class="card_item_bc">
+                  <div>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="icon icon-tabler icon-tabler-align-box-left-middle"
+                      width="44"
+                      height="44"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="#6A27FF"
+                      fill="none"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path
+                        d="M3 3m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z"
+                      />
+                      <path d="M9 15h-2" />
+                      <path d="M13 12h-6" />
+                      <path d="M11 9h-4" />
+                    </svg>
+                  </div>
+
+                  <div
+                    class="clickable-div"
+                    data-target="{{ board.slide_id }}"
+                    onclick="change(this)"
+                  >
+                    {{ board.prompt_content }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+
+          <div class="col-md-6 col-lg-3" id="add_new">
+            <div class="card" onclick="add_blank_frame()">
+              <div class="card-body new_add" style="padding: 0">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="icon icon-tabler icon-tabler-circle-plus"
+                  width="44"
+                  height="44"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="#6A27FF"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                  <path d="M9 12l6 0" />
+                  <path d="M12 9l0 6" />
+                </svg>
+                <div>
+                  <p>Create new frame</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="width: 100%; height: 100px"></div>
+      </div>
+    </div>
+
+    <style>
+        @media screen and (max-width: 1270px) {
+            .muf {
+              flex-direction: column;
+            }
+
+            .muf > div {
+              padding-bottom: 0rem!important;
+            }
+          }
+
+          .colp {
+            flex-direction: column;
+          }
+    </style>
+
+    <!-- Right panel  -->
+    <div class="container2_9 container-xl action_pane">
+      <div class="container-xl colp">
+        <div class="slab">
+          <div class="lsab muf">
+            <!-- Settings -->
+            <div class="py-3">
+              <div class="btn btn_zap btn-icon w-100" onclick="delete_slide()">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="icon icon-tabler icon-tabler-square-x"
+                  width="44"
+                  height="44"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="#6A27FF"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path
+                    d="M3 3m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z"
+                  />
+                  <path d="M10 10l4 4m0 -4l-4 4" />
+                </svg>
+              </div>
+            </div>
+
+            <div class="py-3">
+              <div
+                class="btn btn_zap w-100"
+                data-bs-toggle="modal"
+                data-bs-target="#imageModal"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="icon icon-tabler icon-tabler-refresh"
+                  width="44"
+                  height="44"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="#6A27FF"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" />
+                  <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" />
+                </svg>
+                Regenerate
+              </div>
+            </div>
+
+            <div class="py-3">
+              <div onclick="page_reload()" class="btn btn_zap w-100">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="icon icon-tabler icon-tabler-repeat"
+                  width="44"
+                  height="44"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="#6A27FF"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M4 12v-3a3 3 0 0 1 3 -3h13m-3 -3l3 3l-3 3" />
+                  <path d="M20 12v3a3 3 0 0 1 -3 3h-13m3 3l-3 -3l3 -3" />
+                </svg>
+                Refresh
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="py-3">
+          <p class="empty-subtitle text-muted">
+            To make changes to frame , first select a frame then apply changes.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="d-flex p-2">
+            <div
+              class="card_item_bc"
+              style="border-top: none; margin-top: 20px"
+            >
+              <div>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="icon icon-tabler icon-tabler-pencil-minus"
+                  width="44"
+                  height="44"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="#6A27FF"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path
+                    d="M8 20l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4h4z"
+                  />
+                  <path d="M13.5 6.5l4 4" />
+                  <path d="M16 18h4" />
+                </svg>
+              </div>
+              <div style="width: 100%">
+                <input
+                  type="text"
+                  id="prompt_field"
+                  class="form-control"
+                  name="example-text-input"
+                  placeholder="your script appears here..."
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex p-2">
+            <div class="card_item_bc" style="border-top: none">
+              <div class="btn btn_zap w-100" onclick="applyChanges()">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="icon icon-tabler icon-tabler-arrow-badge-right"
+                  width="44"
+                  height="44"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="#6A27FF"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M13 7h-6l4 5l-4 5h6l4 -5z" />
+                </svg>
+                Apply changes
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{%csrf_token%}
+
+<script>
+  // Declaring the variables here
+  var board_id = {{ board_id }};
+</script>
+
+<script src="{% static 'js/script.js' %}"></script>
+<script src="{% static 'js/dashboard.js' %}"></script>
+<script>
+  
+function delete_slide() {
+  const url = "/api/delete_slide";
+  const slide_id = document
+    .getElementById("prompt_field")
+    .getAttribute("data-target");
+
+
+    if (!slide_id) {
+        alert("Please choose a slide first");
+      } else {
+        const data = {
+            slide_id: slide_id,
+          };
+        
+          const csrfToken = document.getElementsByName("csrfmiddlewaretoken")[0].value;
+        
+          fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": csrfToken,
+            },
+            body: JSON.stringify(data),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              var jsonData = data.output;
+              location.reload();
+            })
+            .catch((error) => console.error(error));
+      }
+
+}
+</script>
+{% endblock %}
